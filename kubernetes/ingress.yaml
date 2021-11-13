@@ -4,20 +4,13 @@ metadata:
   name: arch-homework-nginx
   annotations:
     kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   rules:
     - host: arch.homework
       http:
         paths:
-          - path: /|/(.*)
-            pathType: Prefix
-            backend:
-              service:
-                name: arch-homework
-                port:
-                  number: 8000
-          - path: /otusapp/yserov/|/(.*)
+          - path: /otusapp/yserov(/|$)(.*)
             pathType: Prefix
             backend:
               service:
