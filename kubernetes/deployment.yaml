@@ -18,11 +18,11 @@ spec:
           livenessProbe:
             httpGet:
               path: /health
-              port: 8000
+              port: 80
             initialDelaySeconds: 3
             periodSeconds: 3
           ports:
-            - containerPort: 80
+            - containerPort: 8000
           env:
             - name: APP_KEY
               value: base64:cUPmwHx4LXa4Z25HhzFiWCf7TlQmSqnt98pnuiHmzgY=
