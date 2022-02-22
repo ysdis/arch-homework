@@ -1,10 +1,61 @@
-FROM composer:2.1.12 as build
-WORKDIR /var/www/html
-COPY ./src /var/www/html
-RUN composer install --optimize-autoloader --no-dev
+FROM php:7.4-fpm
 
-FROM php:8.0-apache
-EXPOSE 80
-COPY --chown=www-data:www-data --from=build /var/www/html /var/www/html
-COPY ./vhost.conf /etc/apache2/sites-available/000-default.conf
-RUN a2enmod rewrite headers
+# Install system dependencies
+RUN apt-get update \
+    && apt-get install -y \
+        git \
+        curl \
+        dpkg-dev \
+        libpng-dev \
+        libjpeg-dev \
+        libonig-dev \
+        libxml2-dev \
+        libpq-dev \
+        libzip-dev \
+        zip \
+        unzip \
+        cron
+
+RUN docker-php-ext-configure gd \
+  --enable-gd \
+  --with-jpeg
+
+ADD ./docker/services/php/php.ini /usr/local/etc/php/php.ini
+
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions
+#RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql pgsql mbstring exif pcntl bcmath gd sockets zip
+RUN docker-php-ext-install pdo pdo_pgsql pgsql mbstring gd zip
+
+# Install NodeJS
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
+RUN apt-get install -y nodejs
+
+# Get latest Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Create system user to run Composer and Artisan Commands
+RUN groupadd --gid 1000 dev
+RUN useradd -G www-data,root -s /bin/bash --uid 1000 --gid 1000 dev
+
+RUN mkdir -p /home/dev/.composer && \
+    chown -R dev:dev /home/dev
+
+# Setting right timezone for container
+RUN ln -snf /usr/share/zoneinfo/Europe/Moscow /etc/localtime && echo Europe/Moscow > /etc/timezone
+
+# Setting right timezone for PHP
+RUN printf "[PHP]\ndate.timezone = \"Europe/Moscow\"\n" > /usr/local/etc/php/conf.d/tzone.ini
+
+# Set working directory
+WORKDIR /var/www
+
+USER dev
+
+COPY ./src /src
+
+# Expose port 9000 and start php-fpm server
+EXPOSE 9000
+CMD ["php-fpm"]

@@ -1,0 +1,120 @@
+phpfpm:
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 9000
+
+  envs:
+    - name: APP_KEY
+      valueFrom:
+        secretKeyRef:
+          name: arch-homework-phpfpm-secret
+          key: APP_KEY
+    - name: DB_USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: arch-homework-phpfpm-secret
+          key: DB_USERNAME
+    - name: DB_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: arch-homework-phpfpm-secret
+          key: DB_PASSWORD
+    - name: DB_DATABASE
+      valueFrom:
+        secretKeyRef:
+          name: arch-homework-phpfpm-secret
+          key: DB_DATABASE
+    - name: DB_PORT
+      valueFrom:
+        secretKeyRef:
+          name: arch-homework-phpfpm-secret
+          key: DB_PORT
+
+  image:
+    repository: yarser/arch-homework
+    pullPolicy: Always
+    tag: 0.1.1
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+
+  resources: { }
+
+nginx:
+  replicaCount: 1
+
+  workdir_conf: /var/www/public/
+
+  image:
+    repository: nginx
+    pullPolicy: IfNotPresent
+    tag: stable
+
+  envs: [ ]
+
+  livenessProbe:
+    path: /health
+  readinessProbe:
+    path: /health
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  autoscaling:
+    enabled: false
+
+  resources: { }
+
+workdir: /var/www/
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  hosts:
+    - host: arch.homework
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: [ ]
+
+# Enable persistence using Persistent Volume Claims
+# ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
+#
+persistence:
+  volumeMode: Filesystem
+  # existingClaim: # use this PVC, don't create one
+  # existingVolume: # use this name for volume, instead of chart generated
+  accessModes:
+    - ReadWriteMany
+  storage: 1Gi
+  annotations: { }
+
+nameOverride: ""
+fullnameOverride: ""
+podAnnotations: { }
+imagePullSecrets: [ ]
+securityContext: { }
+podSecurityContext: { }
+nodeSelector: { }
+tolerations: [ ]
+affinity: { }
+
+serviceAccount:
+  create: true
+  annotations: { }
+  name: ""
+
+postgresql:
+  auth:
+    postgresPassword: "password"
+    password: "password"
+    database: "arch_homework"
+    existingSecret: ""
