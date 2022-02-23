@@ -53,10 +53,14 @@ spec:
               containerPort: 80
               protocol: TCP
           livenessProbe:
+            periodSeconds: 15
+            failureThreshold: 5
             httpGet:
               path: {{ .Values.nginx.livenessProbe.path }}
               port: http
           readinessProbe:
+            periodSeconds: 15
+            failureThreshold: 5
             httpGet:
               path: {{ .Values.nginx.readinessProbe.path }}
               port: http

@@ -54,7 +54,7 @@ WORKDIR /var/www
 
 USER dev
 
-COPY ./src /src
+COPY --chown=dev:www-data ./src /src
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000

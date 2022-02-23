@@ -4,37 +4,10 @@ phpfpm:
     type: ClusterIP
     port: 9000
 
-  envs:
-    - name: APP_KEY
-      valueFrom:
-        secretKeyRef:
-          name: arch-homework-phpfpm-secret
-          key: APP_KEY
-    - name: DB_USERNAME
-      valueFrom:
-        secretKeyRef:
-          name: arch-homework-phpfpm-secret
-          key: DB_USERNAME
-    - name: DB_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: arch-homework-phpfpm-secret
-          key: DB_PASSWORD
-    - name: DB_DATABASE
-      valueFrom:
-        secretKeyRef:
-          name: arch-homework-phpfpm-secret
-          key: DB_DATABASE
-    - name: DB_PORT
-      valueFrom:
-        secretKeyRef:
-          name: arch-homework-phpfpm-secret
-          key: DB_PORT
-
   image:
     repository: yarser/arch-homework
-    pullPolicy: Always
-    tag: 0.1.1
+    pullPolicy: IfNotPresent
+    tag: 0.1.3
 
   autoscaling:
     enabled: false
@@ -114,7 +87,8 @@ serviceAccount:
 
 postgresql:
   auth:
-    postgresPassword: "password"
-    password: "password"
-    database: "arch_homework"
-    existingSecret: ""
+    database: postgres
+    enablePostgresUser: true
+    postgresPassword: password
+  metrics:
+    enabled: true
