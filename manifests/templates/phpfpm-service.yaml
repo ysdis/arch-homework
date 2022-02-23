@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "arch-homework.fullname" . }}-phpfpm
+  labels:
+    {{- include "arch-homework.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.phpfpm.service.type }}
+  ports:
+    - port: {{ .Values.phpfpm.service.port }}
+      targetPort: phpfpm
+      protocol: TCP
+      name: phpfpm
+  selector:
+    {{- include "arch-homework.selectorLabels" . | nindent 4 }}

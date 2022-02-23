@@ -1,0 +1,94 @@
+phpfpm:
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 9000
+
+  image:
+    repository: yarser/arch-homework
+    pullPolicy: IfNotPresent
+    tag: 0.1.3
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+
+  resources: { }
+
+nginx:
+  replicaCount: 1
+
+  workdir_conf: /var/www/public/
+
+  image:
+    repository: nginx
+    pullPolicy: IfNotPresent
+    tag: stable
+
+  envs: [ ]
+
+  livenessProbe:
+    path: /health
+  readinessProbe:
+    path: /health
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  autoscaling:
+    enabled: false
+
+  resources: { }
+
+workdir: /var/www/
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  hosts:
+    - host: arch.homework
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: [ ]
+
+# Enable persistence using Persistent Volume Claims
+# ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
+#
+persistence:
+  volumeMode: Filesystem
+  # existingClaim: # use this PVC, don't create one
+  # existingVolume: # use this name for volume, instead of chart generated
+  accessModes:
+    - ReadWriteMany
+  storage: 1Gi
+  annotations: { }
+
+nameOverride: ""
+fullnameOverride: ""
+podAnnotations: { }
+imagePullSecrets: [ ]
+securityContext: { }
+podSecurityContext: { }
+nodeSelector: { }
+tolerations: [ ]
+affinity: { }
+
+serviceAccount:
+  create: true
+  annotations: { }
+  name: ""
+
+postgresql:
+  auth:
+    database: postgres
+    enablePostgresUser: true
+    postgresPassword: password
+  metrics:
+    enabled: true

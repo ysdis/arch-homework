@@ -1,1 +1,5 @@
 .idea
+/manifests/charts
+/src/vendor
+/docker/database
+/docker/.env
