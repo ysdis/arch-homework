@@ -46,6 +46,10 @@ nginx:
 
 workdir: /var/www/
 
+metrics:
+  serviceMonitor:
+    enabled: true
+
 ingress:
   enabled: true
   className: nginx
