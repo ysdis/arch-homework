@@ -4,6 +4,7 @@ metadata:
   name: {{ include "arch-homework.fullname" . }}-phpfpm
   labels:
     {{- include "arch-homework.labels" . | nindent 4 }}
+    app.kubernetes.io/component: metrics
 spec:
   {{- if not .Values.phpfpm.autoscaling.enabled }}
   replicas: {{ .Values.phpfpm.replicaCount }}
@@ -74,6 +75,11 @@ spec:
                 secretKeyRef:
                   name: {{ include "arch-homework.fullname" . }}-phpfpm-secret
                   key: DB_PORT
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "arch-homework.fullname" . }}-phpfpm-secret
+                  key: REDIS_PASSWORD
             - name: APP_ENV
               valueFrom:
                 configMapKeyRef:

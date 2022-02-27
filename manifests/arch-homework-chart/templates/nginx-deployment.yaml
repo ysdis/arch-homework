@@ -4,6 +4,7 @@ metadata:
   name: {{ include "arch-homework.fullname" . }}-nginx
   labels:
     {{- include "arch-homework.labels" . | nindent 4 }}
+    app.kubernetes.io/component: metrics
 spec:
   {{- if not .Values.nginx.autoscaling.enabled }}
   replicas: {{ .Values.nginx.replicaCount }}
