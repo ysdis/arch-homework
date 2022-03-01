@@ -7,7 +7,7 @@ metadata:
     {{- include "arch-homework.labels" . | nindent 4 }}
     component: nginx
 data:
-  nginx.conf: |
+  nginx.conf: |-
     events {
     }
     http {

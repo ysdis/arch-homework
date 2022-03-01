@@ -1,5 +1,5 @@
 phpfpm:
-  replicaCount: 1
+  replicaCount: 2
   service:
     type: ClusterIP
     port: 9000
@@ -7,7 +7,7 @@ phpfpm:
   image:
     repository: yarser/arch-homework
     pullPolicy: IfNotPresent
-    tag: 0.1.3
+    tag: 0.1.7
 
   autoscaling:
     enabled: false
@@ -45,6 +45,10 @@ nginx:
   resources: { }
 
 workdir: /var/www/
+
+metrics:
+  serviceMonitor:
+    enabled: true
 
 ingress:
   enabled: true
@@ -92,3 +96,11 @@ postgresql:
     postgresPassword: password
   metrics:
     enabled: true
+    serviceMonitor:
+      enabled: true
+
+redis:
+  auth:
+    password: password
+  replica:
+    replicaCount: 0

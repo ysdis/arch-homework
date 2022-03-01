@@ -22,8 +22,8 @@ RUN apt-get update \
         unzip \
         cron
 
-RUN pecl install xdebug
-RUN docker-php-ext-enable xdebug
+RUN pecl install xdebug redis \
+    && docker-php-ext-enable xdebug redis
 
 RUN docker-php-ext-configure gd \
   --enable-gd \

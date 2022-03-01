@@ -50,6 +50,12 @@ class Handler extends ExceptionHandler
             return $this->renderResponse($exception);
         }
 
+        if (config('app.debug')) {
+            return app(Responder::class)
+                ->error((string)$exception->getCode(), $exception->getMessage() . ' ' . $exception->getTraceAsString())
+                ->respond(500)
+            ;
+        }
         return app(Responder::class)
             ->error((string)$exception->getCode(), $exception->getMessage())
             ->respond(500)

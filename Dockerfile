@@ -16,6 +16,9 @@ RUN apt-get update \
         unzip \
         cron
 
+RUN pecl install redis \
+    && docker-php-ext-enable redis
+
 RUN docker-php-ext-configure gd \
   --enable-gd \
   --with-jpeg
